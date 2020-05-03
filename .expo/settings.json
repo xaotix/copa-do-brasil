@@ -1,0 +1,8 @@
+{
+  "urlRandomness": "89-rpi",
+  "hostType": "lan",
+  "lanType": "ip",
+  "dev": true,
+  "minify": false,
+  "https": false
+}

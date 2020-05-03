@@ -1,83 +1,70 @@
-import React, { useState } from 'react'
-import { StyleSheet, Text, View, TextInput, Button, Image, SafeAreaView, ScrollView } from 'react-native'
-import { round } from 'react-native-reanimated'
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, FlatList } from 'react-native';
+import axios from 'axios'
+import { ListItem } from 'react-native-elements';
+import TouchableScale from 'react-native-touchable-scale';
+import { Ionicons } from '@expo/vector-icons';
 
-const Inicio = (props) => {
-
-    const [Litros, setLitros] = useState('56')
-    const [Kilometros, setKilometros] = useState('480')
-    const [msg, setMsg] = useState("Digite os dados de consumo:")
-
+export default function Inicio(props) {
     const { navigation } = props
-
-    const calcular = () => {
-        navigation.navigate("Resultado", { litros: Litros, kilometros: Kilometros, media: Number((parseInt(Kilometros) / parseInt(Litros)).toFixed(1)) })
-
+    const [dados, setDados] = useState([])
+    const getDados = () => {
+        axios.get('https://api.api-futebol.com.br/v1/campeonatos', { 'headers': { 'Authorization': 'Bearer test_68c6740ee54d5b79f6e4bc96221129' } })
+            .then((retorno) => {
+                var arr = [];
+                Object.keys(retorno.data).forEach((fase, index) => {
+                    arr.push(retorno.data[fase])
+                })
+                console.log(arr);
+                setDados(arr)
+            })
+            .catch((erro) => {
+                console.log(erro)
+            })
     }
+
+    useEffect(
+        () => {
+            getDados()
+
+        }, []
+    )
 
     return (
-        <View style={styles.container}>
-            <Image source={require('./imagens/inmetro-logo.png')} style={styles.imagem} />
-            <Text style={styles.Texto}>{msg}</Text>
-            <TextInput
-                style={styles.caixaTexto}
-                keyboardType={'numeric'}
-                placeholder="Litros"
-                onChangeText={(valor) => setLitros(valor)}
-                value={Litros}
+        <View  style={{flex: 1,  backgroundColor: '#4287f5'}}>
+            <FlatList
+                data={dados}
+                renderItem={
+                    ({ item }) =>
+                        <ListItem
+                            onPress={() =>
+                                navigation.navigate("Resultado", { item })
+                            }
+                            bottomDivider
+                            key={item.campeonato_id}
+                            title={item.edicao_atual.nome}
+                            leftAvatar={{ source: require('./imagens/bola.png') }}
+                            Component={TouchableScale}
+                            friction={90}
+                            tension={100}
+                            activeScale={0.95}
+                            linearGradientProps={{
+                                colors: ['#001ddb', '#4287f5'],
+                                start: { x: 1.5, y: 0 },
+                                end: { x: 0.5, y: 0 },
+                            }}
+                            titleStyle={{ color: 'white', fontWeight: 'bold' }}
+                            subtitleStyle={{ color: 'white' }}
+                            chevron={{ color: 'white' }}
+                        >
+                        </ListItem>
+                }
+                keyExtractor={(item) => item.campeonato_id.toString()}
             />
-            <TextInput
-                style={styles.caixaTexto}
-                placeholder="Kilômetros Rodados"
-                keyboardType={'numeric'}
-                onChangeText={(valor) => setKilometros(valor)}
-                value={Kilometros}
-            />
-            <View style={styles.botaoDefault}>
-                <Button
-                    title="Calcular"
-                    onPress={() => calcular()}
-                />
-            </View>
-            <Text style={styles.footer}>Daniel Lins Maciel - 2020</Text>
+
         </View>
-    )
+    );
 }
 
-export default Inicio
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    caixaTexto: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        fontFamily: "Roboto",
-        textAlign: "center",
-        borderWidth: 1,
-        borderColor: 'gray',
-        width: "90%",
-        padding: 5,
-        marginTop: 5
-    },
-    Texto: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        fontFamily: "Roboto",
-        textAlign: "center",
-        padding: 5,
-        marginTop: 5
-    },
-    botaoDefault: {
-        marginTop: 15
-    },
-    footer:
-    {
-        position: 'absolute',
-        bottom: 5
-    }
 });

@@ -1,132 +1,77 @@
-import React from 'react'
-import { StyleSheet, Text, View, Button, Image, SafeAreaView, ScrollView } from 'react-native'
-import RNSpeedometer from 'react-native-speedometer'
-
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, View, FlatList} from 'react-native'
+import axios from 'axios'
+import { ListItem } from 'react-native-elements';
+import TouchableScale from 'react-native-touchable-scale';
+import { Ionicons } from '@expo/vector-icons';
 
 const Resultado = (props) => {
   const { navigation } = props
   const { route } = props
-  const { litros } = route.params
-  const { kilometros } = route.params
-  const { media } = route.params
+  const { item: campeonato } = route.params
+  const [dados, setDados] = useState([])
 
-
-  return (
-
-
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.cabecalho}>
-      <Image source={require('./imagens/inmetro-logo.png')} style={styles.imagem} />
-          <Text style={styles.texto}>Litros: {litros} </Text>
-          <Text style={styles.texto}>Kilômetros rodados: {kilometros} </Text>
-          <Text style={styles.texto}>Consumo médio: {media} Km/L</Text>
-        </View>
-
-
-
-        <View style={styles.grafico}>
-          <SafeAreaView>
-            <RNSpeedometer value={media}
-              maxValue={25}
-            
-              labels={[
-                {
-                  name: 'Categoria E - Terrível',
-                  activeBarColor: '#ff2900',
-                  maxValue:4,
-                  
-                  
-                },
-                {
-                  name: 'Categoria D - Ruim',
-                  activeBarColor: '#ff5400',
-                  maxValue: 8,
-                },
-                {
-                  name: 'Categoria C - Ok',
-                  activeBarColor: '#f4ab44',
-                  maxValue: 10,
-                },
-                {
-                  name: 'Categoria B - Bom',
-                  activeBarColor: '#f2cf1f',
-                  maxValue:12,
-                },
-                {
-                  name: 'Categoria A - Ótimo',
-                  activeBarColor: '#14eb6e',
-                  maxValue:18,
-                },
-                {
-                  name: 'Categoria A+ - Excelente',
-                  activeBarColor: '#00ff6b',
-                },
-              ]
-              }
-
-            />
-
-          </SafeAreaView>
-        </View>
-
-
-        <View style={styles.botaoDefault}>
-          <Button title="Voltar" onPress={() => navigation.replace("Inicio")} />
-        </View>
-
-
-      </ScrollView>
-      <Text style={styles.bottom}>Daniel Lins Maciel - 2020</Text>
-    </SafeAreaView>
-
-  )
-}
-
-export default Resultado
-
-const styles = StyleSheet.create({
-  botaoDefault: {
-    marginTop: 75,
-    marginBottom: 10
-  },
-  cabecalho: {
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  texto: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    fontFamily: "Roboto",
-    marginBottom: 2,
-  },
-  grafico: {
-
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-},
-  imagem:
-  {
-    marginTop: 10,
-    marginBottom: 10,
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-
-  },
-  scrollView: {
-    marginHorizontal: 10,
-  },
-  footer:
-  {
-      position: 'absolute',
-      bottom: 5
+  const getDados = () => {
+    console.log(campeonato)
+    axios.get('https://api.api-futebol.com.br/v1/campeonatos/' + campeonato.campeonado_id, { 'headers': { 'Authorization': 'Bearer test_68c6740ee54d5b79f6e4bc96221129' } })
+      .then((retorno) => {
+        console.log(retorno.data.fases)
+        setDados(retorno.data.fases)
+        navigation.setOptions({ title:  campeonato.nome})
+      })
+      .catch((erro) => {
+        console.log(erro)
+      })
   }
 
+  useEffect(
+    () => {
+      getDados()
+    }, []
+  )
+
+  
+  return campeonato.edicao_atual.temporada != undefined ?
+
+<View  style={{flex: 1,  backgroundColor: '#4287f5'}}>
+          <FlatList
+            data={dados}
+            renderItem={
+              ({ item }) =>
+                <ListItem
+                  onPress={() => {
+                    const campeonato_id = campeonato.campeonato_id
+                    navigation.navigate("Fase", { item, campeonato_id, campeonato })
+                  }
+                  }
+                  bottomDivider
+                  chevron
+                  key={item.campeonado_id}
+                  title={item.nome}
+                  leftAvatar={{ source: require('./imagens/fase.png') }}
+                  Component={TouchableScale}
+                  friction={90}
+                  tension={100}
+                  activeScale={0.95}
+                  linearGradientProps={{
+                    colors: ['#001ddb', '#4287f5'],
+                    start: { x: 1.5, y: 0 },
+                    end: { x: 0.5, y: 0 },
+                  }}
+                  titleStyle={{ color: 'white', fontWeight: 'bold' }}
+                  subtitleStyle={{ color: 'white' }}
+                  chevron={{ color: 'white' }}
+                >
+                </ListItem>
+            }
+            keyExtractor={(item) => item.fase_id.toString()}
+          />
+</View>
+  :null
+}
+export default Resultado
+const styles = StyleSheet.create({
+full:{
+flex:1
+}
 });

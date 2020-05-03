@@ -4,14 +4,19 @@ import 'react-native-gesture-handler'
 import { NavigationContainer } from '@react-navigation/native'
 import Inicio from './src/pages/Inicio'
 import Resultado from './src/pages/Resultado'
+import Fase from './src/pages/Fase'
+import Jogo from './src/pages/Jogo'
 import { createStackNavigator } from '@react-navigation/stack'
 import { CardStyleInterpolators } from '@react-navigation/stack'
+
+
 
 export default function App() {
   const Stack = createStackNavigator();
 
   return (
-    <NavigationContainer>
+        
+    <NavigationContainer >
       <Stack.Navigator initialRouteName="Inicio" >
         <Stack.Screen
           name="Resultado"
@@ -26,13 +31,49 @@ export default function App() {
               fontWeight: 'bold',
             },
             headerShown: true,
-            title: "Resultado",
+            title: "Fases",
             headerTitleAlign: "center",
             headerLeft: null,
           }}
         />
         <Stack.Screen
-        
+          name="Jogo"
+          component={Jogo}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            headerStyle: {
+              backgroundColor: '#4287f5',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            headerShown: true,
+            title: "Jogo",
+            headerTitleAlign: "center",
+            headerLeft: null,
+          }}
+        />
+        <Stack.Screen
+          name="Fase"
+          component={Fase}
+          options={{
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            headerStyle: {
+              backgroundColor: '#4287f5',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            headerShown: true,
+            title: "Jogos",
+            headerTitleAlign: "center",
+            headerLeft: null,
+          }}
+        />
+        <Stack.Screen
+         style={{flex: 1}}
           name="Inicio"
           component={Inicio}
           options={{
@@ -45,7 +86,7 @@ export default function App() {
               fontWeight: 'bold',
             },
             headerShown: true,
-            title: "Calcular Consumo Gasolina",
+            title: "Futebol",
             headerTitleAlign: "center",
             headerLeft: null,
           }}
@@ -54,6 +95,7 @@ export default function App() {
       </Stack.Navigator>
 
     </NavigationContainer>
+    
   );
 }
 

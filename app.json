@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Calcula Consumo Gasolina",
-    "slug": "CalculaConsumo",
+    "name": "Futebol 1.0",
+    "slug": "Futebol",
     "platforms": [
       "ios",
       "android",
